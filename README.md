@@ -1,33 +1,43 @@
-Assignment 4 - Components
-===
+# Svelte + Vite
 
-Due: September 25th, by 1:59 PM.
+This template should help get you started developing with Svelte in Vite.
 
-For this assignment you will re-implement the client side portion of *either* A2 or A3 using either React or Svelte components. If you choose A3 you only need to use components for the data display / updating; you can leave your login UI as is.
+## Recommended IDE Setup
 
-[Svelte Tutorial](https://github.com/cs-4241-26a/cs-4241-26a.github.io/blob/main/using.svelte.md)  
-[React Tutorial](https://github.com/cs-4241-26a/cs-4241-26a.github.io/blob/main/using.react.md)  
+[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
 
-This project can be implemented on any hosting service (Glitch, DigitalOcean, Heroku etc.), however, you must include all files in your GitHub repo so that the course staff can view them.
+## Need an official Svelte framework?
 
-Deliverables
----
+Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
 
-Do the following to complete this assignment:
+## Technical considerations
 
-1. Implement your project with the above requirements.
-3. Test your project to make sure that when someone goes to your main page on Render/Heroku/etc., it displays correctly.
-4. Ensure that your project has the proper naming scheme `a4-firstname-lastname` so we can find it.
-5. Fork this repository and modify the README to the specifications below. Be sure to add *all* project files.
-6. Create and submit a Pull Request to the original repo. Name the pull request using the following template: `a4-firstname-lastname`.
+**Why use this over SvelteKit?**
 
-Sample Readme (delete the above when you're ready to submit, and modify the below so with your links and descriptions)
----
+- It brings its own routing solution which might not be preferable for some users.
+- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
 
-## Your Web Application Title
+This template contains as little as possible to get started with Vite + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
 
-your hosting link e.g. http://a4-charlieroberts.me
+Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
 
-Include a very brief summary of your project here and what you changed / added to assignment #3. Briefly (3–4 sentences) answer the following question: did the new technology improve or hinder the development experience?
+**Why include `.vscode/extensions.json`?**
 
-Unlike previous assignments, this assignment will be solely graded on whether or not you successfully complete it. Partial credit will be generously given.
+Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
+
+**Why enable `checkJs` in the JS template?**
+
+It is likely that most cases of changing variable types in runtime are likely to be accidental, rather than deliberate. This provides advanced typechecking out of the box. Should you like to take advantage of the dynamically-typed nature of JavaScript, it is trivial to change the configuration.
+
+**Why is HMR not preserving my local component state?**
+
+HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/sveltejs/svelte-hmr/tree/master/packages/svelte-hmr#preservation-of-local-state).
+
+If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
+
+```js
+// store.js
+// An extremely simple external store
+import { writable } from 'svelte/store'
+export default writable(0)
+```
