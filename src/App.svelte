@@ -1,89 +1,65 @@
 <script>
-  import svelteLogo from './assets/svelte.svg'
-  import viteLogo from './assets/vite.svg'
-  import heroImg from './assets/hero.png'
-  import Counter from './lib/Counter.svelte'
+    import {melody, playbackInfo, userInfo, playNote} from "./shared.svelte.js";
+    import NoteInput from "./lib/NoteInput.svelte";
+
+    /**
+     * Plays all notes in the given melody. This is destructive, so the function should only be given snapshots of the melody.
+     * @param {any[]} melody
+     */
+    function playMelody(melody) {
+        if (melody.length > 0) {
+            playbackInfo.currentlyPlaying = true;
+            // for (let loadButton of document.getElementsByClassName('coll-item-load')) {
+            //     loadButton.disabled = true;
+            // }
+
+            let note = melody.shift()
+            playNote(note, () => {playMelody(melody)})
+        } else {
+            playbackInfo.currentlyPlaying = false;
+            // for (let loadButton of document.getElementsByClassName('coll-item-load')) {
+            //     loadButton.disabled = false;
+            // }
+        }
+    }
+
+    function playButton() {
+        let melodyClone = $state.snapshot(melody);
+        playMelody(melodyClone);
+    }
 </script>
 
-<section id="center">
-  <div class="hero">
-    <img src={heroImg} class="base" width="170" height="179" alt="" />
-    <img src={svelteLogo} class="framework" alt="Svelte logo" />
-    <img src={viteLogo} class="vite" alt="Vite logo" />
-  </div>
-  <div>
-    <h1>Get started</h1>
-    <p>Edit <code>src/App.svelte</code> and save to test <code>HMR</code></p>
-  </div>
-  <Counter />
-</section>
 
-<div class="ticks"></div>
-
-<section id="next-steps">
-  <div id="docs">
-    <svg class="icon" role="presentation" aria-hidden="true">
-      <use href="/icons.svg#documentation-icon"></use>
-    </svg>
-    <h2>Documentation</h2>
-    <p>Your questions, answered</p>
-    <ul>
-      <li>
-        <a href="https://vite.dev/" target="_blank" rel="noreferrer">
-          <img class="logo" src={viteLogo} alt="" />
-          Explore Vite
-        </a>
-      </li>
-      <li>
-        <a href="https://svelte.dev/" target="_blank" rel="noreferrer">
-          <img class="button-icon" src={svelteLogo} alt="" />
-          Learn more
-        </a>
-      </li>
-    </ul>
-  </div>
-  <div id="social">
-    <svg class="icon" role="presentation" aria-hidden="true">
-      <use href="/icons.svg#social-icon"></use>
-    </svg>
-    <h2>Connect with us</h2>
-    <p>Join the Vite community</p>
-    <ul>
-      <li>
-        <a href="https://github.com/vitejs/vite" target="_blank" rel="noreferrer">
-          <svg class="button-icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#github-icon"></use>
-          </svg>
-          GitHub
-        </a>
-      </li>
-      <li>
-        <a href="https://chat.vite.dev/" target="_blank" rel="noreferrer">
-          <svg class="button-icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#discord-icon"></use>
-          </svg>
-          Discord
-        </a>
-      </li>
-      <li>
-        <a href="https://x.com/vite_js" target="_blank" rel="noreferrer">
-          <svg class="button-icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#x-icon"></use>
-          </svg>
-          X.com
-        </a>
-      </li>
-      <li>
-        <a href="https://bsky.app/profile/vite.dev" target="_blank" rel="noreferrer">
-          <svg class="button-icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#bluesky-icon"></use>
-          </svg>
-          Bluesky
-        </a>
-      </li>
-    </ul>
-  </div>
-</section>
-
-<div class="ticks"></div>
-<section id="spacer"></section>
+<main>
+    <h2>make a melody</h2>
+    <div id="melody-maker">
+        <div id="melody">
+            <button id="play" onclick={playButton} disabled={playbackInfo.currentlyPlaying}>▶</button>
+            {#each {length: 8}, index}
+                <NoteInput {index} />
+            {/each}
+        </div>
+        Melody:
+        {#each melody as note}
+            {note}
+        {/each}
+        <div id="instructions">
+            1-8 are the notes of the major scale, 0 is silence.<br>
+            write your melody, give it a title, and submit it to the collection.
+        </div>
+        <div id="details">
+            <button id="clear">clear</button>
+            <label for="title-input">melody title:</label> <input type="text" id="title-input">
+            <label for="composer-input">composer:</label> <input type="text" id="composer-input" disabled>
+            <button id="submit">submit</button>
+        </div>
+    </div>
+    <h2>collection</h2>
+    <div id="show-user-collection-div">
+        <input type="checkbox" id="show-user-collection"> <label for="show-user-collection">only show your collection</label>
+    </div>
+    <div id="collection">
+        <!-- Collection items are generated here in code -->
+        <p>nothing here yet...</p>
+    </div>
+</main>
