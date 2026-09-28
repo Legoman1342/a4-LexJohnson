@@ -234,7 +234,7 @@ app.use(cookie({
     keys: [process.env.SESSION_KEY_1, process.env.SESSION_KEY_2]
 }))
 
-// app.use(express.static("public"))
+// app.use(express.static("src")) // TODO Reintroduce this for the production build
 
 app.use("/collection", middleware_get_collection)
 app.use("/user-collection", middleware_get_user_collection)

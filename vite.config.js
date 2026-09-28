@@ -7,14 +7,6 @@ export default defineConfig({
   server: {
     cors: {
       origin: "http://localhost:3000"
-    },
-    // Enable Vite to proxy requests to your Express server
-    proxy: {
-      '/api': {
-        target: 'http://localhost:3000',
-        changeOrigin: true,
-        secure: false,
-      }
     }
   },
   build: {

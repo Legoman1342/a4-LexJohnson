@@ -1,5 +1,5 @@
 <script>
-    import {userInfo, defaultComposer, melodyInfo, interfaceInfo, collection, playMelody} from "./shared.svelte.js";
+    import {melodyInfo, interfaceInfo, collection, playMelody} from "./shared.svelte.js";
     import NoteInput from "./lib/NoteInput.svelte";
     import CollectionItem from "./lib/CollectionItem.svelte";
 
@@ -16,9 +16,6 @@
         }
     }
 
-
-    // Functions that run when interacting with UI elements
-
     /**
      * Runs when the play button is clicked.
      */
@@ -33,8 +30,30 @@
     function clearButton() {
         melodyInfo.melody = [0, 0, 0, 0, 0, 0, 0, 0];
         melodyInfo.title = "";
-        melodyInfo.composer = defaultComposer;
+        melodyInfo.composer = "";
         melodyInfo.modifiable = true;
+    }
+
+    /**
+     * Runs when the submit button is clicked.
+     * @param {any} event
+     */
+    async function submitButton(event) {
+        event.preventDefault()
+
+        const json = {
+            title: melodyInfo.title,
+            composer: melodyInfo.composer,
+            melody: melodyInfo.melody
+        }
+        const body = JSON.stringify(json)
+
+        await fetch('http://localhost:3000/submit', { // TODO Change to http://${window.location.host}/submit
+            method:'POST',
+            body: body
+        })
+
+        await getCollection()
     }
 
 
@@ -42,7 +61,15 @@
     getCollection()
 </script>
 
-
+<nav>
+    <h1>𝅘𝅥𝅮 mini melodies</h1>
+<!--    <div class="account-buttons">-->
+<!--        <p id="logged-in-status">{userInfo.loggedIn ? "logged in as " + userInfo.username : "not logged in"}</p>-->
+<!--        <a id="create-account" class="button" href="http://localhost:3000/create-account" style="visibility: {userInfo.loggedIn ? "collapse" : "visible"}">create account</a>-->
+<!--        <a id="login" class="button" href="http://localhost:3000/login" style="visibility: {userInfo.loggedIn ? "collapse" : "visible"}">log in</a>-->
+<!--        <a id="logout" class="button" href="http://localhost:3000/logout" style="visibility: {userInfo.loggedIn ? "visible" : "collapse"}">log out</a>-->
+<!--    </div>-->
+</nav>
 <main>
     <h2>make a melody</h2>
     <div id="melody-maker">
@@ -59,14 +86,14 @@
         <div id="details">
             <button id="clear" onclick={clearButton}>clear</button>
             <label for="title-input">melody title:</label> <input type="text" id="title-input" bind:value={melodyInfo.title} disabled={!melodyInfo.modifiable}>
-            <label for="composer-input">composer:</label> <input type="text" id="composer-input" bind:value={melodyInfo.composer} disabled>
-            <button id="submit" disabled={!userInfo.loggedIn || !melodyInfo.modifiable}>submit</button>
+            <label for="composer-input">composer:</label> <input type="text" id="composer-input" bind:value={melodyInfo.composer} disabled={!melodyInfo.modifiable}>
+            <button id="submit" onclick={submitButton} disabled={!melodyInfo.modifiable}>submit</button>
         </div>
     </div>
     <h2>collection</h2>
-    <div id="show-user-collection-div">
-        <input type="checkbox" id="show-user-collection" disabled={!userInfo.loggedIn}> <label for="show-user-collection">only show your collection</label>
-    </div>
+<!--    <div id="show-user-collection-div">-->
+<!--        <input type="checkbox" id="show-user-collection" disabled={!userInfo.loggedIn}> <label for="show-user-collection">only show your collection</label>-->
+<!--    </div>-->
     <div id="collection">
         {#each collection as melody}
             <CollectionItem melody={melody} />

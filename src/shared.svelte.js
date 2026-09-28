@@ -11,20 +11,20 @@ const frequencies = {
 }
 
 // Info about the current user
-export let userInfo = $state({
-    loggedIn: false,
-    userID: null,
-    username: null
-});
+// export let userInfo = $state({
+//     loggedIn: false,
+//     userID: null,
+//     username: null
+// });
 
 // The value to put in the "composer" box when no other composer's melody is loaded
-export let defaultComposer = userInfo.loggedIn ? userInfo.username : "log in to submit"
+// export let defaultComposer = userInfo.loggedIn ? userInfo.username : "log in to submit"
 
 // Info about the currently loaded melody
 export let melodyInfo = $state({
     melody: [0, 0, 0, 0, 0, 0, 0, 0],
     title: "",
-    composer: defaultComposer,
+    composer: "",
     modifiable: true
 })
 
