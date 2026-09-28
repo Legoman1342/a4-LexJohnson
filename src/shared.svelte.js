@@ -89,7 +89,7 @@ export function playMelody(melody) {
  * @param {string} id
  */
 export async function loadMelody(id) {
-    const response = await fetch(`http://${window.location.host}/collection/${id}`, {
+    const response = await fetch(`https://${window.location.host}/collection/${id}`, {
         method: "GET"
     })
     const collItem = JSON.parse(await response.text())

@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [svelte()],
   server: {
     cors: {
-      origin: "http://localhost:3000"
+      origin: "*"
     }
   },
   build: {
