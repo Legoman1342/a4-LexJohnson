@@ -10,20 +10,32 @@ const frequencies = {
     "8": 523.24
 }
 
-// List of notes to play
-export let melody = $state([0, 0, 0, 0, 0, 0, 0, 0])
-
-// Whether the melody is currently playing
-export let playbackInfo = $state({
-    currentlyPlaying: false
-})
-
 // Info about the current user
 export let userInfo = $state({
     loggedIn: false,
     userID: null,
     username: null
 });
+
+// The value to put in the "composer" box when no other composer's melody is loaded
+export let defaultComposer = userInfo.loggedIn ? userInfo.username : "log in to submit"
+
+// Info about the currently loaded melody
+export let melodyInfo = $state({
+    melody: [0, 0, 0, 0, 0, 0, 0, 0],
+    title: "",
+    composer: defaultComposer,
+    modifiable: true
+})
+
+// List of melodies to display on the page
+export let collection = $state([])
+
+// Info that triggers changes to the user interface
+export let interfaceInfo = $state({
+    currentlyPlaying: false,
+    showUserCollection: false
+})
 
 
 /**
@@ -49,4 +61,63 @@ export function playNote(note, callback) {
 
     oscNode.start()
     oscNode.stop(0.25)
+}
+
+/**
+ * Plays all notes in the given melody. This is destructive, so the function should only be given snapshots of the melody.
+ * @param {any[]} melody
+ */
+export function playMelody(melody) {
+    if (melody.length > 0) {
+        interfaceInfo.currentlyPlaying = true;
+        // for (let loadButton of document.getElementsByClassName('coll-item-load')) {
+        //     loadButton.disabled = true;
+        // }
+
+        let note = melody.shift()
+        playNote(note, () => {playMelody(melody)})
+    } else {
+        interfaceInfo.currentlyPlaying = false;
+        // for (let loadButton of document.getElementsByClassName('coll-item-load')) {
+        //     loadButton.disabled = false;
+        // }
+    }
+}
+
+/**
+ * Gets the specified melody from the server and loads it into the input fields.
+ * @param {string} id
+ */
+export async function loadMelody(id) {
+    const response = await fetch(`http://localhost:3000/collection/${id}`, { // TODO Change to http://${window.location.host}/coll...
+        method: "GET"
+    })
+    const collItem = JSON.parse(await response.text())
+
+    melodyInfo.title = collItem.title
+    melodyInfo.composer = collItem.composer
+    melodyInfo.melody = collItem.melody
+
+    // Enable editing and submitting if the melody is the current user's, disable if it's someone else's
+    melodyInfo.modifiable = collItem.composer === userInfo.username;
+
+    playMelody($state.snapshot(melodyInfo.melody))
+}
+
+/**
+ * Returns the corresponding adjective for a given vibes value, on a scale of sleepy to flamin' hot.
+ */
+export function getVibesAdjective(vibes) {
+    // |0| sleepy |4| chill |16| fresh |36| groovy |56| flamin' hot |64|
+    if (vibes <= 4) {
+        return "sleepy"
+    } else if (vibes <= 16) {
+        return "chill"
+    } else if (vibes <= 36) {
+        return "fresh"
+    } else if (vibes <= 56) {
+        return "groovy"
+    } else {
+        return "flamin' hot"
+    }
 }
