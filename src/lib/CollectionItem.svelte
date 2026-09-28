@@ -1,5 +1,5 @@
 <script>
-    import {loadMelody, getVibesAdjective} from "../shared.svelte.js";
+    import {interfaceInfo, loadMelody, getVibesAdjective} from "../shared.svelte.js";
     let { melody } = $props();
     let melodyString = ""
     for (let note of melody.melody) {
@@ -13,5 +13,5 @@
         <p class="coll-item-melody">{melodyString}</p>
         <p class="coll-item-vibes">vibes: {getVibesAdjective(melody.vibes)} ({melody.vibes})</p>
     </div>
-    <button class="coll-item-load" onclick={() => loadMelody(melody._id.toString())}>load</button>
+    <button class="coll-item-load" onclick={() => loadMelody(melody._id.toString())} disabled={interfaceInfo.currentlyPlaying} >load</button>
 </div>

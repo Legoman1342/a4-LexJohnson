@@ -89,7 +89,7 @@ export function playMelody(melody) {
  * @param {string} id
  */
 export async function loadMelody(id) {
-    const response = await fetch(`http://localhost:3000/collection/${id}`, { // TODO Change to http://${window.location.host}/coll...
+    const response = await fetch(`http://${window.location.host}/collection/${id}`, {
         method: "GET"
     })
     const collItem = JSON.parse(await response.text())
@@ -99,7 +99,7 @@ export async function loadMelody(id) {
     melodyInfo.melody = collItem.melody
 
     // Enable editing and submitting if the melody is the current user's, disable if it's someone else's
-    melodyInfo.modifiable = collItem.composer === userInfo.username;
+    melodyInfo.modifiable = false;
 
     playMelody($state.snapshot(melodyInfo.melody))
 }

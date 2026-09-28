@@ -9,7 +9,7 @@
     async function getCollection() {
         collection.length = 0; // Clear the collection before repopulating it
 
-        const response = await fetch(`http://localhost:3000/collection`, {method: "GET"}) // TODO Change to http://${window.location.host}/collection
+        const response = await fetch(`http://${window.location.host}/collection`, {method: "GET"})
         let data = JSON.parse(await response.text()).reverse() // Reverse the data so the melodies appear in reverse chronological order
         for (let melody of data) {
             collection.push(melody)
@@ -48,7 +48,7 @@
         }
         const body = JSON.stringify(json)
 
-        await fetch('http://localhost:3000/submit', { // TODO Change to http://${window.location.host}/submit
+        await fetch(`http://${window.location.host}/submit`, {
             method:'POST',
             body: body
         })

@@ -74,15 +74,15 @@ const middleware_get_collection = async (request, response) => {
     }
 }
 
-/**
- * Returns every collection item that was composed by the given user.
- */
-const middleware_get_user_collection = async (request, response) => {
-    const username = decodeURI(request.url).slice(1); // Cuts "/" off the front
-
-    const collection = await melody_collection.find({composer: username}).toArray()
-    response.json(collection)
-}
+// /**
+//  * Returns every collection item that was composed by the given user.
+//  */
+// const middleware_get_user_collection = async (request, response) => {
+//     const username = decodeURI(request.url).slice(1); // Cuts "/" off the front
+//
+//     const collection = await melody_collection.find({composer: username}).toArray()
+//     response.json(collection)
+// }
 /**
  * Submits a new melody to the collection.
  */
@@ -119,137 +119,137 @@ const middleware_post_melody = (request, response) => {
 
 // ================ Middleware to access the user collection ================
 
-/**
- * Retrieves the user with the given ID or username, or returns 404 if the user doesn't exist.
- */
-const middleware_get_user = async (request, response) => {
-    const url = decodeURI(request.url);
-    let user = null;
-
-    if (url.startsWith("/id/")) {
-        // Find the user by ID
-        const userID = url.slice(4)
-        user = await user_collection.findOne(
-            {_id: new ObjectId(userID)}
-        )
-    } else if (url.startsWith("/username/")) {
-        // Find the user by username
-        const username = url.slice(10)
-        user = await user_collection.findOne(
-            {username: username}
-        )
-    }
-
-    if (user) {
-        response.json(user)
-    } else {
-        response.writeHead(404, "Not Found")
-        response.end('Item Not Found')
-    }
-}
-
-/**
- * Attempts to log a user in by verifying the submitted credentials.
- */
-const middleware_validate_user = async (request, response) => {
-    const user = await user_collection.findOne(
-        {username: request.body.username},
-    )
-
-    if (user !== null && request.body.password === user.password) {
-        request.session.loggedIn = true
-        request.session.userID = user._id
-        request.session.username = user.username
-        response.redirect("/")
-    } else {
-        response.sendFile(__dirname + "/public/login.html")
-    }
-}
-
-/**
- * Adds a new user to the database.
- */
-const middleware_post_user = async (request, response) => {
-    // Check if user already exists
-    const user = await user_collection.findOne(
-        {username: request.body.username},
-    );
-
-    if (user === null) {
-        // Make new user
-        const newUser = {
-            username: request.body.username,
-            password: request.body.password
-        };
-        await user_collection.insertOne(newUser);
-
-        request.session.loggedIn = true;
-        request.session.userID = await user_collection.findOne(
-            {username: newUser.username}
-        )._id;
-        request.session.username = newUser.username;
-        response.redirect("/");
-    } else {
-        response.sendFile(__dirname + "/public/create_account.html")
-    }
-}
-
-/**
- * Returns JSON containing the ID and username of the user who's currently logged in.
- */
-const middleware_get_current_user = function (request, response) {
-    response.json({
-        loggedIn: request.session.loggedIn,
-        userID: request.session.userID,
-        username: request.session.username
-    })
-}
+// /**
+//  * Retrieves the user with the given ID or username, or returns 404 if the user doesn't exist.
+//  */
+// const middleware_get_user = async (request, response) => {
+//     const url = decodeURI(request.url);
+//     let user = null;
+//
+//     if (url.startsWith("/id/")) {
+//         // Find the user by ID
+//         const userID = url.slice(4)
+//         user = await user_collection.findOne(
+//             {_id: new ObjectId(userID)}
+//         )
+//     } else if (url.startsWith("/username/")) {
+//         // Find the user by username
+//         const username = url.slice(10)
+//         user = await user_collection.findOne(
+//             {username: username}
+//         )
+//     }
+//
+//     if (user) {
+//         response.json(user)
+//     } else {
+//         response.writeHead(404, "Not Found")
+//         response.end('Item Not Found')
+//     }
+// }
+//
+// /**
+//  * Attempts to log a user in by verifying the submitted credentials.
+//  */
+// const middleware_validate_user = async (request, response) => {
+//     const user = await user_collection.findOne(
+//         {username: request.body.username},
+//     )
+//
+//     if (user !== null && request.body.password === user.password) {
+//         request.session.loggedIn = true
+//         request.session.userID = user._id
+//         request.session.username = user.username
+//         response.redirect("/")
+//     } else {
+//         response.sendFile(__dirname + "/public/login.html")
+//     }
+// }
+//
+// /**
+//  * Adds a new user to the database.
+//  */
+// const middleware_post_user = async (request, response) => {
+//     // Check if user already exists
+//     const user = await user_collection.findOne(
+//         {username: request.body.username},
+//     );
+//
+//     if (user === null) {
+//         // Make new user
+//         const newUser = {
+//             username: request.body.username,
+//             password: request.body.password
+//         };
+//         await user_collection.insertOne(newUser);
+//
+//         request.session.loggedIn = true;
+//         request.session.userID = await user_collection.findOne(
+//             {username: newUser.username}
+//         )._id;
+//         request.session.username = newUser.username;
+//         response.redirect("/");
+//     } else {
+//         response.sendFile(__dirname + "/public/create_account.html")
+//     }
+// }
+//
+// /**
+//  * Returns JSON containing the ID and username of the user who's currently logged in.
+//  */
+// const middleware_get_current_user = function (request, response) {
+//     response.json({
+//         loggedIn: request.session.loggedIn,
+//         userID: request.session.userID,
+//         username: request.session.username
+//     })
+// }
 
 // ================ Middleware for login/logout pages ================
 
-const middleware_login_page = (request, response) => {
-    response.sendFile(__dirname + "/public/login.html");
-}
-
-const middleware_create_account_page = (request, response) => {
-    response.sendFile(__dirname + "/public/create_account.html");
-}
-
-const middleware_logout = (request, response) => {
-    request.session.loggedIn = false;
-    request.session.userID = null;
-    request.session.username = null;
-    response.redirect("/");
-}
+// const middleware_login_page = (request, response) => {
+//     response.sendFile(__dirname + "/public/login.html");
+// }
+//
+// const middleware_create_account_page = (request, response) => {
+//     response.sendFile(__dirname + "/public/create_account.html");
+// }
+//
+// const middleware_logout = (request, response) => {
+//     request.session.loggedIn = false;
+//     request.session.userID = null;
+//     request.session.username = null;
+//     response.redirect("/");
+// }
 
 // ================ Set up and run the app ================
 
 app.use(middleware_logger)
 app.use(middleware_db_check)
 app.use(cors({
-    origin: ["http://localhost:3000", "http://localhost:5173"] // TODO Change these for the production build
+    origin: "*"
 }))
-app.use(cookie({
-    name: "session",
-    keys: [process.env.SESSION_KEY_1, process.env.SESSION_KEY_2]
-}))
+// app.use(cookie({
+//     name: "session",
+//     keys: [process.env.SESSION_KEY_1, process.env.SESSION_KEY_2]
+// }))
 
-// app.use(express.static("src")) // TODO Reintroduce this for the production build
+app.use(express.static("dist"))
 
 app.use("/collection", middleware_get_collection)
-app.use("/user-collection", middleware_get_user_collection)
+// app.use("/user-collection", middleware_get_user_collection)
 app.post("/submit", express.json(), middleware_post_melody)
 
-app.use("/user", middleware_get_user)
-app.use("/current-user", middleware_get_current_user)
-
-app.use("/login", middleware_login_page)
-app.post("/login-submit", express.urlencoded({extended: true}), middleware_validate_user)
-
-app.use("/create-account", middleware_create_account_page)
-app.post("/create-account-submit", express.urlencoded({extended: true}), middleware_post_user)
-
-app.use("/logout", middleware_logout)
+// app.use("/user", middleware_get_user)
+// app.use("/current-user", middleware_get_current_user)
+//
+// app.use("/login", middleware_login_page)
+// app.post("/login-submit", express.urlencoded({extended: true}), middleware_validate_user)
+//
+// app.use("/create-account", middleware_create_account_page)
+// app.post("/create-account-submit", express.urlencoded({extended: true}), middleware_post_user)
+//
+// app.use("/logout", middleware_logout)
 
 
 connect_to_db().then(() => {
